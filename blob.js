@@ -47,6 +47,11 @@ bot.on('message', message => {
                 message.channel.send(list);
                 return;
             }
+            if (m.startsWith('e!help')) {
+                var list = '**Commands:** e!list | e!<emote_name> | e!add <emote_name>|<emote>';
+                message.channel.send(list);
+                return;
+            }
             if (!m.startsWith('e!list') && !m.startsWith('e!add')) {
                 var cmd = m.substring(2).trim();
                 if (!commands.hasOwnProperty(cmd)) {
