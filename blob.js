@@ -14,6 +14,7 @@ bot.on('ready', () => {
             console.log(err);
         commands = JSON.parse(jsonContents);
     });
+    bot.user.setPresence({ game: { name: "e!help for help", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
 });
 
