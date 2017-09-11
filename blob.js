@@ -49,7 +49,7 @@ bot.on('message', message => {
                 return;
             }
             if (m.startsWith('e!help')) {
-                var list = '**Commands:** e!list | e!<emote_name> | e!add <emote_name>|<emote>';
+                var list = '**Commands:** \n- e!list \n- e!<emote_name> \n- e!add <emote_name>|<emote>';
                 message.channel.send(list);
                 return;
             }
