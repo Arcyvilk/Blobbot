@@ -27,8 +27,10 @@ bot.on('message', message => {
             }
         }
         if (message.content !== m) {
-            message.channel.send(`**${message.author.username}**: ${m}`);
+            message.guild.me.setNickname(`${message.author.username} (Blobbot)`, 'For the case of Blobbot');
+            message.channel.send(`${m}`);
             message.delete(3000);
+            message.guild.me.setNickname('Blobbot', 'Back to old nickname');
         }
 
         if (message.content == 'blob!info') {
@@ -38,6 +40,7 @@ bot.on('message', message => {
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
                 `**Number of emotes:** ${Object.keys(emojis).length}\n` +
                 '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000 \n' +
+                '**Webpage:** http://arcyvilk.com/blobbot/' +
                 '**Author:** <:vikkie:235038789444173825> \`\`Arcyvilk#5460\`\`';
             sendEmbed('Info about Blobbot', toSend, message.author);
             message.delete(3000);
