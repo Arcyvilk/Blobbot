@@ -24,7 +24,7 @@ bot.on('message', message => {
                 m = m.replace(`:${name}:`, `<:${name}:${emojis[name]}>`);
             }
         }
-        if (message.content != m) {
+        if (message.content !== m) {
             message.channel.send(`**${message.author.username}**: ${m}`);
             message.delete(3000);
         }
@@ -34,12 +34,14 @@ bot.on('message', message => {
                 'Whenever you use :emote: in a message I will fix that for you.\n\n' +
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
                 '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000');
+            message.delete(3000);
         }
         if (message.content == 'blob!list') {
             var list = '';
             for (name in emojis)
                 list += ` | ${name}`;
             message.author.send(`**List of emotes:**${list}`);
+            message.delete(3000);
         }
     }
 });
