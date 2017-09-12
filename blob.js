@@ -41,8 +41,7 @@ bot.on('message', message => {
                 }
                 else
                     message.channel.send(`**${message.author.username}:** ${m}`);
-                if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
-                    message.delete(3000);
+                deleteMessageIfCan(message);
             }
             else
                 message.channel.send(`${m}`);
@@ -58,10 +57,7 @@ bot.on('message', message => {
                 '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
                 '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
             sendEmbed('Info about Blobbot', toSend, message.author);
-            if (message.guild) {
-                if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
-                    message.delete(3000);
-            }
+            deleteMessageIfCan(message);
         }
         if (message.content == 'blob!list') {
             var list = [];
@@ -82,10 +78,7 @@ bot.on('message', message => {
                 m += `<:${list[i]}:${emojis[list[i]]}>`;
             }
             sendEmbed(`List of emotes`, m, message.author);
-            if (message.guild) {
-                if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
-                    message.delete(3000);
-            }
+            deleteMessageIfCan(message);
         }
         if (message.content == 'blob!servers') {
             var g = bot.guilds.array();
@@ -93,6 +86,7 @@ bot.on('message', message => {
             for (i in g)
                 m += `${g[i].name}\n`;
             sendEmbed(`List of servers I'm in`, m, message.author);
+            deleteMessageIfCan(message);
         }
     }
 });
@@ -109,6 +103,12 @@ function fetchEmojis() {
     }
 };
 
+function deleteMessageIfCan(message) {
+    if (message.guild) {
+        if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
+            message.delete(3000);
+    }
+};
 function sendEmbed(title, content, channel) {
     var embed = new Discord.RichEmbed()
         .setTitle(title)
