@@ -32,29 +32,31 @@ bot.on('message', message => {
         }
 
         if (message.content == 'blob!info') {
-            message.author.send('I am an emote bot. Add me to any server and I\'ll be able to use this server\s emotes globally.\n' +
-                'Whenever you use :emote: in a message I will fix that for you.\n' +
-                'I update my emotes every 60 seconds.\n\n' +
+            var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
+                'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n' +
+                'I update my list emotes every 60 seconds.\n\n' +
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
                 `**Number of emotes:** ${Object.keys(emojis).length}\n` +
-                '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000');
+                '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000'
+            sendEmbed('Info about Blobbot', toSend, message.author);
             message.delete(3000);
         }
         if (message.content == 'blob!list') {
             var list = [];
-            var m = `**List of emotes:**`;
+            var m = '';
 
             for (name in emojis)
                 list.push(name);
             list.sort();
             for (i in list) {
-                if (`${m} | \`\`${list[i]}\`\``.length >= 1900) {
-                    message.author.send(m);
+                if (`${m}\`\`${list[i]}\`\` `.length >= 2000)
+                {
+                    sendEmbed(`List of emotes`, m, message.author);
                     m = '';
                 }
-                m += ` | \`\`${list[i]}\`\``;
+                m += `\`\`${list[i]}\`\` `;
             }
-            message.author.send(m);
+            sendEmbed(`List of emotes`, m, message.author);
             message.delete(3000);
         }
     }
@@ -69,5 +71,12 @@ function fetchEmojis() {
         for (j in e)
             emojis[e[j].name] = e[j].id;
     }
-    console.log(`${d} - emoji fetching succesful!`);
+};
+
+function sendEmbed(title, content, channel) {
+    var embed = new Discord.RichEmbed()
+        .setTitle(title)
+        .setColor(`0xFDC000`)
+        .setDescription(content);
+    channel.send({embed});
 };
