@@ -8,7 +8,7 @@ bot.login(token);
 
 bot.on('ready', () => {
     var data = Date.now();
-    bot.user.setPresence({ game: { name: "GIBE EMOTES", type: 0 } });
+    bot.user.setPresence({ game: { name: "blob!info -> DM", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
 
     if (fetchEmojis())
@@ -19,12 +19,27 @@ bot.on('message', message => {
     var m = message.content;
 
     if (!message.author.bot) {
-        if (message.content.startsWith(':') && message.content.endsWith(':')) {
-            var m = message.content.substring(1, message.content.length - 1);
-            if (emojis.hasOwnProperty(m)) {
-                message.channel.send(`**${message.author.username}**: <:${m}:${emojis[m]}>`);
-                message.delete(3000);
+        for (name in emojis) {
+            if (message.content.indexOf(`:${name}:`) != -1) {
+                m = m.replace(`:${name}:`, `<:${name}:${emojis[name]}>`);
             }
+        }
+        if (message.content != m) {
+            message.channel.send(`**${message.author.username}**: ${m}`);
+            message.delete(3000);
+        }
+
+        if (message.content == 'blob!info') {
+            message.author.send('I am an emote bot. Add me to any server and I\'ll be able to use this server\s emotes globally.\n' +
+                'Whenever you use :emote: in a message I will fix that for you.\n\n' +
+                '**Commands:** ``blob!info`` | ``blob!list``\n' +
+                '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000');
+        }
+        if (message.content == 'blob!list') {
+            var list = '';
+            for (name in emojis)
+                list += ` | ${name}`;
+            message.author.send(`**List of emotes:**${list}`);
         }
     }
 });
