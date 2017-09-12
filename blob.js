@@ -8,7 +8,7 @@ bot.login(token);
 
 bot.on('ready', () => {
     var data = Date.now();
-    bot.user.setPresence({ game: { name: "e!help for help", type: 0 } });
+    bot.user.setPresence({ game: { name: "GIBE EMOTES", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
 
     if (fetchEmojis())
