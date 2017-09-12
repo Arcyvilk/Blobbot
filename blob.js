@@ -11,8 +11,10 @@ bot.on('ready', () => {
     bot.user.setPresence({ game: { name: "blob!info -> DM", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
 
-    if (fetchEmojis())
-        console.log(`${data} - emoji fetching succesful!`);
+    setInterval(() => {
+        if (fetchEmojis())
+            console.log(`${data} - emoji fetching succesful!`);
+    }, 60000);
 });
 
 bot.on('message', message => {
