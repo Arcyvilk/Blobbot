@@ -48,13 +48,15 @@ bot.on('message', message => {
             for (name in emojis)
                 list.push(name);
             list.sort();
+
             for (i in list) {
-                if (`${m}\`\`${list[i]}\`\` `.length >= 2000)
-                {
+                if (`${m}${list[i]} `.length >= 2000) {
                     sendEmbed(`List of emotes`, m, message.author);
                     m = '';
                 }
-                m += `\`\`${list[i]}\`\` `;
+                if (!list[i-1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
+                    m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
+                m += `${list[i]} `;
             }
             sendEmbed(`List of emotes`, m, message.author);
             message.delete(3000);
