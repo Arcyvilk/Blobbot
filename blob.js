@@ -94,6 +94,7 @@ bot.on('message', message => {
 function fetchEmojis() {
     var g = bot.guilds.array();
     var d = Date.now();
+    emojis = {};
 
     for (i in g) {
         var e = g[i].emojis.array();
