@@ -22,7 +22,7 @@ bot.on('message', message => {
 
     if (!message.author.bot) {
         for (name in emojis) {
-            if (message.content.indexOf(`:${name}:`) != -1) {
+            if (message.content.indexOf(`:${name}:`) != -1 && message.content.indexOf(`<:${name}:`) == -1) {
                 m = m.replace(`:${name}:`, `<:${name}:${emojis[name]}>`);
             }
         }
