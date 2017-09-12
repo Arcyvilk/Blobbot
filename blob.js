@@ -67,13 +67,13 @@ bot.on('message', message => {
             list.sort();
 
             for (i in list) {
-                if (`${m}${list[i]} `.length >= 2000) {
+                if (`${m}<:${list[i]}:${emojis[list[i]]}> `.length >= 2000) {
                     sendEmbed(`List of emotes`, m, message.author);
                     m = '';
                 }
                 if (!list[i-1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
                     m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
-                m += `${list[i]} `;
+                m += `<:${list[i]}:${emojis[list[i]]}>`;
             }
             sendEmbed(`List of emotes`, m, message.author);
             if (message.guild) {
