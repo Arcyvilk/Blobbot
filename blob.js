@@ -51,7 +51,7 @@ bot.on('message', message => {
                 '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
                 `**Number of emotes:** ${Object.keys(emojis).length}\n` +
                 '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
-                '**Author:** <:vikkie:235038789444173825> \`\`Arcyvilk#5460\`\`';
+                '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
             sendEmbed('Info about Blobbot', toSend, message.author);
             if (message.guild) {
                 if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
