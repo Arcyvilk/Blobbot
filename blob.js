@@ -48,7 +48,7 @@ bot.on('message', message => {
                 'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
                 'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
                 'I update my list emotes every 60 seconds.\n\n' +
-                '**Commands:** ``blob!info`` | ``blob!list``\n' +
+                '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
                 `**Number of emotes:** ${Object.keys(emojis).length}\n` +
                 '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
                 '**Author:** <:vikkie:235038789444173825> \`\`Arcyvilk#5460\`\`';
@@ -80,6 +80,13 @@ bot.on('message', message => {
                 if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
                     message.delete(3000);
             }
+        }
+        if (message.content == 'blob!servers') {
+            var g = bot.guilds.array();
+            var m = '';
+            for (i in g)
+                m += `${g[i].name}\n`;
+            sendEmbed(`List of servers I'm in`, m, message.author);
         }
     }
 });
