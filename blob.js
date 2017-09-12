@@ -11,9 +11,9 @@ bot.on('ready', () => {
     bot.user.setPresence({ game: { name: "blob!info -> DM", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
 
+    fetchEmojis();
     setInterval(() => {
-        if (fetchEmojis())
-            console.log(`${data} - emoji fetching succesful!`);
+        fetchEmojis();            
     }, 60000);
 });
 
@@ -33,7 +33,8 @@ bot.on('message', message => {
 
         if (message.content == 'blob!info') {
             message.author.send('I am an emote bot. Add me to any server and I\'ll be able to use this server\s emotes globally.\n' +
-                'Whenever you use :emote: in a message I will fix that for you.\n\n' +
+                'Whenever you use :emote: in a message I will fix that for you.\n' +
+                'I update my emotes every 60 seconds.\n\n' +
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
                 '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000');
             message.delete(3000);
@@ -50,11 +51,12 @@ bot.on('message', message => {
 
 function fetchEmojis() {
     var g = bot.guilds.array();
+    var d = Date.now();
 
     for (i in g) {
         var e = g[i].emojis.array();
         for (j in e)
             emojis[e[j].name] = e[j].id;
     }
-    return true;
+    console.log(`${d} - emoji fetching succesful!`);
 };
