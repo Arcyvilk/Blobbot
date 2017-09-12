@@ -36,14 +36,25 @@ bot.on('message', message => {
                 'Whenever you use :emote: in a message I will fix that for you.\n' +
                 'I update my emotes every 60 seconds.\n\n' +
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
+                `**Number of emotes:** ${Object.keys(emojis).length}\n` +
                 '**Invite link:** https://discordapp.com/oauth2/authorize?client_id=356890709799862273&scope=bot&permissions=0x00042000');
             message.delete(3000);
         }
         if (message.content == 'blob!list') {
-            var list = '';
+            var list = [];
+            var m = `**List of emotes:**`;
+
             for (name in emojis)
-                list += ` | ${name}`;
-            message.author.send(`**List of emotes:**${list}`);
+                list.push(name);
+            list.sort();
+            for (i in list) {
+                if (`${m} | \`\`${list[i]}\`\``.length >= 1900) {
+                    message.author.send(m);
+                    m = '';
+                }
+                m += ` | \`\`${list[i]}\`\``;
+            }
+            message.author.send(m);
             message.delete(3000);
         }
     }
