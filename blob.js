@@ -62,6 +62,7 @@ bot.on('message', message => {
             var list = [];
             var m = '';
 
+            fetcEmojis();
             for (name in emojis)
                 list.push(name);
             list.sort();
