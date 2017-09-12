@@ -35,7 +35,8 @@ bot.on('message', message => {
 
         if (message.content == 'blob!info') {
             var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
-                'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n' +
+                'If you try to use those emotes in any other server, I will resend your message with the original emotes attached. ' +
+                'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
                 'I update my list emotes every 60 seconds.\n\n' +
                 '**Commands:** ``blob!info`` | ``blob!list``\n' +
                 `**Number of emotes:** ${Object.keys(emojis).length}\n` +
