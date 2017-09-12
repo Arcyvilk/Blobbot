@@ -27,10 +27,15 @@ bot.on('message', message => {
             }
         }
         if (message.content !== m) {
-            message.guild.me.setNickname(`${message.author.username} (Blobbot)`, 'For the case of Blobbot');
-            message.channel.send(`${m}`);
-            message.delete(3000);
-            message.guild.me.setNickname('Blobbot', 'Back to old nickname');
+            if (message.guild.me.hasPermission('CHANGE_NICKNAME')) {
+                message.guild.me.setNickname(`${message.author.username} (Blobbot)`, 'For the case of Blobbot');
+                message.channel.send(`${m}`);
+                message.guild.me.setNickname('Blobbot', 'Back to old nickname');
+            }
+            else
+                message.channel.send(`**${message.author.username}:** ${m}`);
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
+                message.delete(3000);
         }
 
         if (message.content == 'blob!info') {
@@ -43,7 +48,8 @@ bot.on('message', message => {
                 '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
                 '**Author:** <:vikkie:235038789444173825> \`\`Arcyvilk#5460\`\`';
             sendEmbed('Info about Blobbot', toSend, message.author);
-            message.delete(3000);
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
+                message.delete(3000);
         }
         if (message.content == 'blob!list') {
             var list = [];
@@ -63,7 +69,8 @@ bot.on('message', message => {
                 m += `${list[i]} `;
             }
             sendEmbed(`List of emotes`, m, message.author);
-            message.delete(3000);
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
+                message.delete(3000);
         }
     }
 });
