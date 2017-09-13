@@ -29,18 +29,7 @@ bot.on('message', message => {
         }
         function replaceEmote() {
             if (message.guild) {
-                if (message.author.username.length <= 22 && message.guild.me.hasPermission('CHANGE_NICKNAME')) {
-                    message.guild.me.setNickname(`${message.author.username} (Blobbot)`, 'For the case of Blobbot')
-                        .then(() => {
-                            message.channel.send(`${m}`);
-                            message.guild.me.setNickname('Blobbot', 'Back to old nickname')
-                                .then(() => { })
-                                .catch(err => { console.log(err); });
-                        })
-                        .catch(err => { console.log(err); })
-                }
-                else
-                    message.channel.send(`**${message.author.username}:** ${m}`);
+                message.channel.send(`**${message.author.username}:** ${m}`);
                 deleteMessageIfCan(message);
             }
             else
