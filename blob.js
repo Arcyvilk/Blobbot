@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 var fs = require('fs');
-var Answer = require('./answer.js');
-var answer;
+var CMD = require('./cmd.js');
+var cmd;
 
 var emojis = {};
 
@@ -14,11 +14,11 @@ bot.on('ready', () => {
     bot.user.setPresence({ game: { name: "blob!info -> DM", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
     
-    answer = new Answer.Answer();
+    cmd = new CMD.CMD();
     fetchCommands(cmds => {
-        answer.getCommands(cmds);
+        cmd.getCommands(cmds);
     });
-    answer.getBot(bot);
+    cmd.getBot(bot);
     fetchEmojis();
 
     setInterval(() => {
@@ -31,9 +31,9 @@ bot.on('message', message => {
 
     if (!message.author.bot) {
         if (keywordDetected(message.content)) { //this function handless all non-emoji commands
-            answer.getMessage(message);
-            answer.getEmojis(emojis);
-            answer.checkForCommands();
+            cmd.getMessage(message);
+            cmd.getEmojis(emojis);
+            cmd.checkForCommands();
             deleteMessageIfCan(message);
             return;
         }
