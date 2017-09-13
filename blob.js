@@ -1,8 +1,10 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 var fs = require('fs');
+var Answer = require('./answer.js');
+var answer;
+
 var emojis = {};
-var commands = {};
 
 const token = process.env.DISCORD_API_TOKEN;
 bot.login(token);
@@ -11,9 +13,13 @@ bot.on('ready', () => {
     var data = Date.now();
     bot.user.setPresence({ game: { name: "blob!info -> DM", type: 0 } });
     console.log(`${data} - Blobbot reports for duty!`);
-
+    
+    answer = new Answer.Answer();
+    fetchCommands(cmds => {
+        answer.getCommands(cmds);
+    });
+    answer.getBot(bot);
     fetchEmojis();
-    fetchCommands();
 
     setInterval(() => {
         fetchEmojis();            
@@ -24,13 +30,15 @@ bot.on('message', message => {
     var m = message.content;
 
     if (!message.author.bot) {
-        if (keywordDetected(message.content)) {
-            var answer = new Answer(message);
+        if (keywordDetected(message.content)) { //this function handless all non-emoji commands
+            answer.getMessage(message);
+            answer.getEmojis(emojis);
             answer.checkForCommands();
+            deleteMessageIfCan(message);
             return;
         }
 
-        for (name in emojis) {
+        for (name in emojis) { //this function handles just emojis
             if (message.content.indexOf(`:${name}:`) != -1 && message.content.indexOf(`<:${name}:`) == -1) {
                 replaceEmote = (function () {
                     var findThis = `:${name}:`;
@@ -62,61 +70,6 @@ function keywordDetected(msg) {
 //------------------------CUSTOM FUNCTIONS----------------------
 //--------------------------------------------------------------
 
-var Answer = function (msg) {
-    var answer = this;
-
-    answer.checkForCommands = function () {
-        var cmd = answer.removeKeyword(msg.content);
-
-        if (commands.hasOwnProperty(cmd))
-            answer[commands[cmd].response]();
-        deleteMessageIfCan(msg);
-    }
-    answer.removeKeyword = function() {
-        return msg.content.substring(5).trim();
-    }
-    answer.toInfo = function () {
-        var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
-            'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
-            'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
-            'I update my list emotes every 60 seconds.\n\n' +
-            '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
-            `**Number of emotes:** ${Object.keys(emojis).length}\n` +
-            '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
-            '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
-        sendEmbed('Info about Blobbot', toSend, msg.author);
-    }
-    answer.toEmoteList = function () {
-        var list = [];
-        var m = '';
-
-        fetchEmojis();
-        for (name in emojis)
-            list.push(name);
-        list.sort();
-
-        for (i in list) {
-            if (`${m}<:${list[i]}:${emojis[list[i]]}> `.length >= 2000) {
-                sendEmbed(`List of emotes`, m, msg.author);
-                m = '';
-            }
-            if (!list[i - 1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
-                m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
-            m += `<:${list[i]}:${emojis[list[i]]}>`;
-        }
-        sendEmbed(`List of emotes`, m, msg.author);
-    }
-    answer.toServerList = function () {
-        var g = bot.guilds.array();
-        var m = '';
-        for (i in g)
-            m += `\n__${g[i].name}__\n` +
-                `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
-                `\`\`- ID:\`\` ${g[i].id}\n`;
-        sendEmbed(`List of servers I'm in`, m, msg.author);
-    }
-}
-
 function fetchEmojis() {
     var g = bot.guilds.array();
     var d = Date.now();
@@ -128,14 +81,15 @@ function fetchEmojis() {
             emojis[e[j].name] = e[j].id;
     }
 };
-function fetchCommands() {
+function fetchCommands(callback) {
     fs.readFile('commandList.json', 'utf8', (err, list) => {
         if (err) {
             var d = Date.now();
             console.log(`${d} - error while fetching command list!`);
             return;
         }
-        commands = JSON.parse(list);
+        callback(JSON.parse(list));
+        return;
     });
 }
 
@@ -144,11 +98,4 @@ function deleteMessageIfCan(message) {
         if (message.guild.me.hasPermission('MANAGE_MESSAGES'))
             message.delete(3000);
     }
-};
-function sendEmbed(title, content, channel) {
-    var embed = new Discord.RichEmbed()
-        .setTitle(title)
-        .setColor(`0xFDC000`)
-        .setDescription(content);
-    channel.send({embed});
 };
