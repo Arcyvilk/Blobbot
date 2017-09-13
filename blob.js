@@ -73,7 +73,9 @@ bot.on('message', message => {
             var g = bot.guilds.array();
             var m = '';
             for (i in g)
-                m += `${g[i].name}\n`;
+                m += `\n__${g[i].name}__\n` +
+                    `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
+                    `\`\`- ID:\`\` ${g[i].id}\n`;
             sendEmbed(`List of servers I'm in`, m, message.author);
             deleteMessageIfCan(message);
         }
