@@ -51,9 +51,21 @@ bot.on('message', message => {
 //------------------------CUSTOM FUNCTIONS----------------------
 //--------------------------------------------------------------
 
-function checkForCommands(msg) {
+function keywordDetected(msg) {
+    if (msg.startsWith("blob!"))
+        return true;
+    return false;
+}
+function removeKeyword(msg) {
+    return msg.substring(5).trim();
+}
 
-    if (msg.content == 'blob!info') {
+function checkForCommands(msg) {
+    if (!keywordDetected(msg.content))
+        return;
+    var command = removeKeyword(msg.content);
+
+    if (command.startsWith('info')) {
         var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
             'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
             'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
@@ -65,7 +77,7 @@ function checkForCommands(msg) {
         sendEmbed('Info about Blobbot', toSend, msg.author);
         deleteMessageIfCan(msg);
     }
-    if (msg.content == 'blob!list') {
+    if (command.startsWith('list')) {
         var list = [];
         var m = '';
 
@@ -86,7 +98,7 @@ function checkForCommands(msg) {
         sendEmbed(`List of emotes`, m, msg.author);
         deleteMessageIfCan(msg);
     }
-    if (msg.content == 'blob!servers') {
+    if (command.startsWith('servers')) {
         var g = bot.guilds.array();
         var m = '';
         for (i in g)
