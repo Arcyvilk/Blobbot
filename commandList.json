@@ -7,6 +7,10 @@
         "response": "toEmoteList",
         "modCommand": false
     },
+    "listbyserver": {
+        "response": "toEmoteListByServer",
+        "modCommand": false
+    },
     "servers": {
         "response": "toServerList",
         "modCommand": false

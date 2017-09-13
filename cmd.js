@@ -16,20 +16,26 @@
     //technical stuffs
     cmd.checkForCommands = function () {
         var keyword = cmd.removeTriggerword(cmd.msg.content);
+        if (keyword.indexOf(' ') != -1)
+            keyword = cmd.removeParameters(keyword);
         if (cmd.commands.hasOwnProperty(keyword))
             cmd[cmd.commands[keyword].response]();
     }
-    cmd.removeTriggerword = function () {
-        return cmd.msg.content.substring(5).trim();
+    cmd.removeTriggerword = function (input) {
+        return input.substring(5).trim();
+    }
+    cmd.removeParameters = function (input) {
+        var output = input.split(' ');
+        return output[0];
     }
 
     //commands themselves
     cmd.toInfo = function () {
         var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
             'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
-            'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
-            'I update my list emotes every 60 seconds.\n\n' +
-            '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
+            'If I have necesary permissions,  I will also remove your original message to not break the flow of conversation.\n\n' +
+            'I update my emote list every 60 seconds.\n\n' +
+            '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!listbyserver`` | ``blob!servers``\n' +
             `**Number of emotes:** ${Object.keys(cmd.emojis).length}\n` +
             '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
             '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
@@ -54,6 +60,20 @@
         }
         cmd.sendEmbed(`List of emotes`, m, cmd.msg.author);
     }
+    cmd.toEmoteListByServer = function () {
+        var m = cmd.removeTriggerword(cmd.msg.content);
+        var guild = cmd.bot.guilds.array();
+
+        for (i in guild) {
+            var emoji = guild[i].emojis.array().sort();
+            var list = '';
+            for (j in emoji) {
+                list += `<:${emoji[j].name}:${emoji[j].id}> `
+            }
+            cmd.sendEmbed(`List of emotes from ${guild[i].name} server`, list, cmd.msg.author);
+        }
+        //make it so you can move between servers with reactions
+    }
     cmd.toServerList = function () {
         var g = cmd.bot.guilds.array();
         var m = '';
@@ -63,6 +83,8 @@
                 `\`\`- ID:\`\` ${g[i].id}\n`;
         cmd.sendEmbed(`List of servers I'm in`, m, cmd.msg.author);
     }
+
+    //sending stuffs
     cmd.sendEmbed = function (title, content, channel) {
         const Discord = require('discord.js');
         var embed = new Discord.RichEmbed()
