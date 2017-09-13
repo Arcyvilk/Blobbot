@@ -10,7 +10,7 @@
     //getters
     cmd.getMessage = function (msg) { cmd.msg = msg; }
     cmd.getCommands = function (commands) { cmd.commands = commands; }
-    cmd.getEmojis = function (emojis){ cmd.emojis = emojis; }
+    cmd.getEmojis = function (emojis) { cmd.emojis = emojis; }
     cmd.getBot = function (bot) { cmd.bot = bot; }
 
     //technical stuffs
@@ -44,7 +44,7 @@
     cmd.toEmoteList = function () {
         var list = [];
         var m = '';
-        
+
         for (name in cmd.emojis)
             list.push(name);
         list.sort();
@@ -64,15 +64,23 @@
         var m = cmd.removeTriggerword(cmd.msg.content);
         var guild = cmd.bot.guilds.array();
 
-        for (i in guild) {
+        listGuildEmotes(0);
+        function listGuildEmotes(i) {
             var emoji = guild[i].emojis.array().sort();
             var list = '';
+            var l = guild.length;
+
             for (j in emoji) {
                 list += `<:${emoji[j].name}:${emoji[j].id}> `
             }
-            cmd.sendEmbed(`List of emotes from ${guild[i].name} server`, list, cmd.msg.author);
+            cmd.sendEmbed(`[${parseInt(i) + 1}/${l}] List of emotes from ${guild[i].name} server`, list, cmd.msg.author);
+            if (i < l-1) {
+                setTimeout(() => {
+                    var j = i + 1;
+                    listGuildEmotes(j);
+                }, 1500);
+            }
         }
-        //make it so you can move between servers with reactions
     }
     cmd.toServerList = function () {
         var g = cmd.bot.guilds.array();
