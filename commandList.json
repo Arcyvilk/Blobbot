@@ -1,0 +1,14 @@
+{
+    "info": {
+        "response": "toInfo",
+        "modCommand": false
+    },
+    "list": {
+        "response": "toEmoteList",
+        "modCommand": false
+    },
+    "servers": {
+        "response": "toServerList",
+        "modCommand": false
+    }
+}

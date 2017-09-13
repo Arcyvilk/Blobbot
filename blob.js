@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 var fs = require('fs');
 var emojis = {};
+var commands = {};
 
 const token = process.env.DISCORD_API_TOKEN;
 bot.login(token);
@@ -12,6 +13,8 @@ bot.on('ready', () => {
     console.log(`${data} - Blobbot reports for duty!`);
 
     fetchEmojis();
+    fetchCommands();
+
     setInterval(() => {
         fetchEmojis();            
     }, 60000);
@@ -21,6 +24,12 @@ bot.on('message', message => {
     var m = message.content;
 
     if (!message.author.bot) {
+        if (keywordDetected(message.content)) {
+            var answer = new Answer(message);
+            answer.checkForCommands();
+            return;
+        }
+
         for (name in emojis) {
             if (message.content.indexOf(`:${name}:`) != -1 && message.content.indexOf(`<:${name}:`) == -1) {
                 replaceEmote = (function () {
@@ -40,32 +49,33 @@ bot.on('message', message => {
                     message.channel.send(`${m}`);
             })();
         }
-
-        if (m.startsWith("blob!")) {
-            checkForCommands(message);
-        };
     }
 });
-
-//--------------------------------------------------------------
-//------------------------CUSTOM FUNCTIONS----------------------
-//--------------------------------------------------------------
 
 function keywordDetected(msg) {
     if (msg.startsWith("blob!"))
         return true;
     return false;
 }
-function removeKeyword(msg) {
-    return msg.substring(5).trim();
-}
 
-function checkForCommands(msg) {
-    if (!keywordDetected(msg.content))
-        return;
-    var command = removeKeyword(msg.content);
+//--------------------------------------------------------------
+//------------------------CUSTOM FUNCTIONS----------------------
+//--------------------------------------------------------------
 
-    if (command.startsWith('info')) {
+var Answer = function (msg) {
+    var answer = this;
+
+    answer.checkForCommands = function () {
+        var cmd = answer.removeKeyword(msg.content);
+
+        if (commands.hasOwnProperty(cmd))
+            answer[commands[cmd].response]();
+        deleteMessageIfCan(msg);
+    }
+    answer.removeKeyword = function() {
+        return msg.content.substring(5).trim();
+    }
+    answer.toInfo = function () {
         var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
             'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
             'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
@@ -75,9 +85,8 @@ function checkForCommands(msg) {
             '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
             '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
         sendEmbed('Info about Blobbot', toSend, msg.author);
-        deleteMessageIfCan(msg);
     }
-    if (command.startsWith('list')) {
+    answer.toEmoteList = function () {
         var list = [];
         var m = '';
 
@@ -96,9 +105,8 @@ function checkForCommands(msg) {
             m += `<:${list[i]}:${emojis[list[i]]}>`;
         }
         sendEmbed(`List of emotes`, m, msg.author);
-        deleteMessageIfCan(msg);
     }
-    if (command.startsWith('servers')) {
+    answer.toServerList = function () {
         var g = bot.guilds.array();
         var m = '';
         for (i in g)
@@ -106,7 +114,6 @@ function checkForCommands(msg) {
                 `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
                 `\`\`- ID:\`\` ${g[i].id}\n`;
         sendEmbed(`List of servers I'm in`, m, msg.author);
-        deleteMessageIfCan(msg);
     }
 }
 
@@ -121,6 +128,16 @@ function fetchEmojis() {
             emojis[e[j].name] = e[j].id;
     }
 };
+function fetchCommands() {
+    fs.readFile('commandList.json', 'utf8', (err, list) => {
+        if (err) {
+            var d = Date.now();
+            console.log(`${d} - error while fetching command list!`);
+            return;
+        }
+        commands = JSON.parse(list);
+    });
+}
 
 function deleteMessageIfCan(message) {
     if (message.guild) {
