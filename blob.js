@@ -23,64 +23,80 @@ bot.on('message', message => {
     if (!message.author.bot) {
         for (name in emojis) {
             if (message.content.indexOf(`:${name}:`) != -1 && message.content.indexOf(`<:${name}:`) == -1) {
-                m = m.replace(`:${name}:`, `<:${name}:${emojis[name]}>`);
-                return replaceEmote();
-            }
+                replaceEmote = (function () {
+                    var findThis = `:${name}:`;
+                    var regex = new RegExp(findThis, 'g')
+                    m = m.replace(regex, `<:${name}:${emojis[name]}>`);
+                })();
+            }                    
         }
-        function replaceEmote() {
-            if (message.guild) {
-                message.channel.send(`**${message.author.username}:** ${m}`);
-                deleteMessageIfCan(message);
-            }
-            else
-                message.channel.send(`${m}`);
-        }
-
-        if (message.content == 'blob!info') {
-            var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
-                'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
-                'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
-                'I update my list emotes every 60 seconds.\n\n' +
-                '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
-                `**Number of emotes:** ${Object.keys(emojis).length}\n` +
-                '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
-                '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
-            sendEmbed('Info about Blobbot', toSend, message.author);
-            deleteMessageIfCan(message);
-        }
-        if (message.content == 'blob!list') {
-            var list = [];
-            var m = '';
-
-            fetchEmojis();
-            for (name in emojis)
-                list.push(name);
-            list.sort();
-
-            for (i in list) {
-                if (`${m}<:${list[i]}:${emojis[list[i]]}> `.length >= 2000) {
-                    sendEmbed(`List of emotes`, m, message.author);
-                    m = '';
+        if (message.content !== m) {
+            sendNewMessage = (function () {
+                if (message.guild) {
+                    message.channel.send(`**${message.author.username}:** ${m}`);
+                    deleteMessageIfCan(message);
                 }
-                if (!list[i-1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
-                    m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
-                m += `<:${list[i]}:${emojis[list[i]]}>`;
-            }
-            sendEmbed(`List of emotes`, m, message.author);
-            deleteMessageIfCan(message);
+                else
+                    message.channel.send(`${m}`);
+            })();
         }
-        if (message.content == 'blob!servers') {
-            var g = bot.guilds.array();
-            var m = '';
-            for (i in g)
-                m += `\n__${g[i].name}__\n` +
-                    `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
-                    `\`\`- ID:\`\` ${g[i].id}\n`;
-            sendEmbed(`List of servers I'm in`, m, message.author);
-            deleteMessageIfCan(message);
-        }
+
+        if (m.startsWith("blob!")) {
+            checkForCommands(message);
+        };
     }
 });
+
+//--------------------------------------------------------------
+//------------------------CUSTOM FUNCTIONS----------------------
+//--------------------------------------------------------------
+
+function checkForCommands(msg) {
+
+    if (msg.content == 'blob!info') {
+        var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
+            'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
+            'If I have necesary permissions,  I will also change my nickname to one similar to yours and remove your original message to not break the flow of conversation.\n\n' +
+            'I update my list emotes every 60 seconds.\n\n' +
+            '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!servers``\n' +
+            `**Number of emotes:** ${Object.keys(emojis).length}\n` +
+            '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
+            '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
+        sendEmbed('Info about Blobbot', toSend, msg.author);
+        deleteMessageIfCan(msg);
+    }
+    if (msg.content == 'blob!list') {
+        var list = [];
+        var m = '';
+
+        fetchEmojis();
+        for (name in emojis)
+            list.push(name);
+        list.sort();
+
+        for (i in list) {
+            if (`${m}<:${list[i]}:${emojis[list[i]]}> `.length >= 2000) {
+                sendEmbed(`List of emotes`, m, msg.author);
+                m = '';
+            }
+            if (!list[i - 1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
+                m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
+            m += `<:${list[i]}:${emojis[list[i]]}>`;
+        }
+        sendEmbed(`List of emotes`, m, msg.author);
+        deleteMessageIfCan(msg);
+    }
+    if (msg.content == 'blob!servers') {
+        var g = bot.guilds.array();
+        var m = '';
+        for (i in g)
+            m += `\n__${g[i].name}__\n` +
+                `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
+                `\`\`- ID:\`\` ${g[i].id}\n`;
+        sendEmbed(`List of servers I'm in`, m, msg.author);
+        deleteMessageIfCan(msg);
+    }
+}
 
 function fetchEmojis() {
     var g = bot.guilds.array();
