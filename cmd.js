@@ -31,11 +31,18 @@
 
     //commands themselves
     cmd.toInfo = function () {
-        var toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
+        var commandList = '';
+        var toSend = '';
+
+        for (let i in cmd.commands) {
+            commandList += `\`\`blob!${i}\`\` | `;
+        }
+
+        toSend = 'I am an emote bot. After adding me to any server I gain access to this server\'s emotes globally. ' +
             'If you try to use those emotes in any other server, I will resend your message with the original emotes attached.\n\n' +
             'If I have necesary permissions,  I will also remove your original message to not break the flow of conversation.\n\n' +
             'I update my emote list every 60 seconds.\n\n' +
-            '**Commands:** ``blob!info`` | ``blob!list`` | ``blob!listbyserver`` | ``blob!servers``\n' +
+            `**Commands:** ${commandList}\n` +
             `**Number of emotes:** ${Object.keys(cmd.emojis).length}\n` +
             '**Webpage:** http://arcyvilk.com/blobbot/ \n' +
             '**Author:** <:arcyvilk:357190068797964298> \`\`Arcyvilk#5460\`\`';
@@ -43,37 +50,37 @@
     }
     cmd.toEmoteList = function () {
         var list = [];
-        var m = '';
+        var output = '';
 
-        for (name in cmd.emojis)
+        for (let name in cmd.emojis)
             list.push(name);
         list.sort();
 
-        for (i in list) {
-            if (`${m}<:${list[i]}:${cmd.emojis[list[i]]}> `.length >= 2000) {
-                cmd.sendEmbed(`List of emotes`, m, cmd.msg.author);
-                m = '';
+        for (let i in list) {
+            if (`${output}<:${list[i]}:${cmd.emojis[list[i]]}> `.length >= 2000) {
+                cmd.sendEmbed(`List of emotes`, output, cmd.msg.author);
+                output = '';
             }
             if (!list[i - 1] || list[i].substring(0, 1) != list[i - 1].substring(0, 1))
-                m += `\n\`\`${list[i].substring(0, 1)}:\`\``;
-            m += `<:${list[i]}:${cmd.emojis[list[i]]}>`;
+                output += `\n\`\`${list[i].substring(0, 1)}:\`\``;
+            output += `<:${list[i]}:${cmd.emojis[list[i]]}>`;
         }
-        cmd.sendEmbed(`List of emotes`, m, cmd.msg.author);
+        cmd.sendEmbed(`List of emotes`, output, cmd.msg.author);
     }
     cmd.toEmoteListByServer = function () {
-        var m = cmd.removeTriggerword(cmd.msg.content);
-        var guild = cmd.bot.guilds.array();
+        var guilds = cmd.bot.guilds.array();
 
         listGuildEmotes(0);
+
         function listGuildEmotes(i) {
-            var emoji = guild[i].emojis.array().sort();
+            var emoji = guilds[i].emojis.array().sort();
             var list = '';
-            var l = guild.length;
+            var l = guilds.length;
 
             for (j in emoji) {
                 list += `<:${emoji[j].name}:${emoji[j].id}> `
             }
-            cmd.sendEmbed(`[${parseInt(i) + 1}/${l}] List of emotes from ${guild[i].name} server`, list, cmd.msg.author);
+            cmd.sendEmbed(`[${parseInt(i) + 1}/${l}] List of emotes from ${guilds[i].name} server`, list, cmd.msg.author);
             if (i < l-1) {
                 setTimeout(() => {
                     var j = i + 1;
@@ -83,13 +90,13 @@
         }
     }
     cmd.toServerList = function () {
-        var g = cmd.bot.guilds.array();
-        var m = '';
-        for (i in g)
-            m += `\n__${g[i].name}__\n` +
-                `\`\`- Owner:\`\` ${g[i].owner.user.username}\n` +
-                `\`\`- ID:\`\` ${g[i].id}\n`;
-        cmd.sendEmbed(`List of servers I'm in`, m, cmd.msg.author);
+        var guilds = cmd.bot.guilds.array();
+        var output = '';
+        for (i in guilds)
+            output += `\n__${guilds[i].name}__\n` +
+                `\`\`- Owner:\`\` ${guilds[i].owner.user.username}\n` +
+                `\`\`- ID:\`\` ${guilds[i].id}\n`;
+        cmd.sendEmbed(`List of servers I'm in`, output, cmd.msg.author);
     }
 
     //sending stuffs

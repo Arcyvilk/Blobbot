@@ -75,10 +75,12 @@ function fetchEmojis() {
     var d = Date.now();
     emojis = {};
 
-    for (i in g) {
+    for (let i in g) {
         var e = g[i].emojis.array();
-        for (j in e)
-            emojis[e[j].name] = e[j].id;
+        for (let j in e) {
+            if (!emojis.hasOwnProperty(e[j].name))
+                emojis[e[j].name] = e[j].id;
+        }
     }
 };
 function fetchCommands(callback) {
